@@ -166,7 +166,7 @@ def test_grad(nexp):
         cost1 = calc_cost(nexp, ncyc, nstop)
         chkgra[nalpha-na1] = -(cost1 - cost0) / (alpha * aa)
         print(f"chkgra(10^{nalpha}) = {chkgra[nalpha-na1]}")
-    np.savetxt(f"g{nexp}.txt", np.column_stack([np.arange(na1, na2+1), chkgra]))
+    np.savetxt(f"g{nexp:02}.txt", np.column_stack([np.arange(na1, na2+1), chkgra]))
 
 
 def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100):
