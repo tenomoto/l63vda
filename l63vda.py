@@ -202,6 +202,6 @@ if __name__ == "__main__":
 #    x = gen_true(91, param)
 #    test_tlm(1, param) 
 #    gen_obs(1, nstop, 60)
-#    test_grad(1)
+#    test_grad(1, param)
 #    print(f"Jc={calc_cost(1, 0, nstop)}")
     run_vda(1, 2)
