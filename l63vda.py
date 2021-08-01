@@ -116,22 +116,22 @@ def gen_obs(nexp, nstop, iobs):
     return calc_cost(nexp, 0, nstop)
 
 
-def gen_true(nexp):
+def gen_true(nexp, param):
     ifile = f"i{nexp:02}.txt"
     w0 = np.loadtxt(ifile)
     return fom(nexp, 0, w0, param)
 
 
-def test_tlm(nexp):
+def test_tlm(nexp, param):
     ncyc = 1
     ifile = f"i{nexp:02}.txt"
     tmp = np.loadtxt(ifile)
     tl = tmp * 0.001
-    tmp = fom(nexp, ncyc-1, tmp, param)
     fw = tmp + tl
+    tmp = fom(nexp, ncyc-1, tmp, param)
     fw = fom(nexp, ncyc, fw, param)
     fw -= tmp
-    print(f"N(w+dw)-N(x) from NL {fw}")
+    print(f"N(w+dw)-N(w) from NL {fw}")
     tl = tlm(nexp, ncyc, tl, param)
     print(f" L(dw) rom TL {tl}")
     ltest = True
@@ -144,7 +144,7 @@ def test_tlm(nexp):
     print(f"X_t (L_t (LX)) = {pa}")
 
 
-def test_grad(nexp):
+def test_grad(nexp, param):
     na1, na2 = -17, -2
     ltest = False
     ncyc = 1
@@ -194,10 +194,14 @@ if __name__ == "__main__":
 #    nstop = 500
 #    r = 10
     param = p, r, b, dt, nstop
-#    x = gen_true(1)
-#    x = gen_true(2)
-#    test_tlm(1) 
+#    print(param)
+#    x = gen_true(1, param)
+#    x = gen_true(2, param)
+#    r = 28.0
+#    nstop = 2000
+#    x = gen_true(91, param)
+#    test_tlm(1, param) 
 #    gen_obs(1, nstop, 60)
 #    test_grad(1)
-    print(f"Jc={calc_cost(1, 0, nstop)}")
+#    print(f"Jc={calc_cost(1, 0, nstop)}")
     run_vda(1, 2)
