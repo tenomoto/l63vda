@@ -38,30 +38,39 @@ def alorenz(wa, dwa, wb, p, r, b):
     return wa, dwa
 
 
-def fom(nexp, ncyc, w, param):
+def fom(nexp, ncyc, w, param, modified_euler=False):
     p, r, b, dt, nstop = param
     x = np.zeros([nstop+1, w.size])
     x[0, :] = w
     fname = f"m{nexp:02}c{ncyc:03}.npy"
     for ntim in range(1, nstop+1):
-        w += dt * florenz(w, p, r, b)
+        if modified_euler:
+            w1 = w + 0.5 * dt * florenz(w, p, r, b)
+            w += dt * florenz(w1, p, r, b)
+        else:
+            w += dt * florenz(w, p, r, b)
         x[ntim, :] = w
     np.save(fname, x)
     return w
 
 
-def tlm(nexp, ncyc, tl, param):
+def tlm(nexp, ncyc, tl, param, modified_euler=False):
     p, r, b, dt, nstop = param
     fname = f"m{nexp:02}c{ncyc-1:03}.npy"
     wb = np.load(fname)
     for ntim in range(nstop):
-        tl += dt * tlorenz(tl, wb[ntim], p, r, b)
+        if modified_euler:
+            tl1 = tl + 0.5 * dt * tlorenz(tl, wb[ntim], p, r, b)
+            wb1 = wb[ntim] + 0.5 * dt * florenz(wb[ntim], p, r, b)
+            tl += dt * tlorenz(tl1, wb1, p, r, b)
+        else:
+            tl += dt * tlorenz(tl, wb[ntim], p, r, b)
     return tl
 
 
-def adm(nexp, ncyc, wa, param, ltest=False):
+def adm(nexp, ncyc, wa, param, ltest=False, modified_euler=False):
     p, r, b, dt, nstop = param
-    dwa = np.zeros(3)
+    dwa = np.zeros(wa.size)
     mfile = f"m{nexp:02}c{ncyc-1:03}.npy"
     wb = np.load(mfile)
     if not ltest:
@@ -71,8 +80,18 @@ def adm(nexp, ncyc, wa, param, ltest=False):
         if not ltest:
             d = calc_innovation(wb[ntim, :], wo[ntim, :])
             wa += d
-        dwa += dt * wa
-        wa, dwa = alorenz(wa, dwa, wb[ntim-1], p, r, b)
+        if modified_euler:
+            wb1 = wb[ntim-1, :] + 0.5 * dt * florenz(wb[ntim-1, :], p, r, b)
+#            dwa = 0.5 * dt * wa
+            dwa = dt * wa
+            wa1 = np.copy(wa)
+            wa1, dwa = alorenz(wa1, dwa, wb1, p, r, b)
+            dwa = 0.5 * dt * wa1
+#            dwa = dt * wa1
+            wa, dwa = alorenz(wa, dwa, wb[ntim-1], p, r, b)
+        else:
+            dwa = dt * wa
+            wa, dwa = alorenz(wa, dwa, wb[ntim-1], p, r, b)
     return wa
 
 
@@ -116,28 +135,28 @@ def gen_obs(nexp, nstop, iobs):
     return calc_cost(nexp, 0, nstop)
 
 
-def gen_true(nexp, param):
+def gen_true(nexp, param, modified_euler=False):
     ifile = f"i{nexp:02}.txt"
     w0 = np.loadtxt(ifile)
-    return fom(nexp, 0, w0, param)
+    return fom(nexp, 0, w0, param, modified_euler)
 
 
-def test_tlm(nexp, param):
+def test_tlm(nexp, param, modified_euler=False):
     ncyc = 1
     ifile = f"i{nexp:02}.txt"
     tmp = np.loadtxt(ifile)
     tl = tmp * 0.001
     fw = tmp + tl
-    tmp = fom(nexp, ncyc-1, tmp, param)
-    fw = fom(nexp, ncyc, fw, param)
+    tmp = fom(nexp, ncyc-1, tmp, param, modified_euler)
+    fw = fom(nexp, ncyc, fw, param, modified_euler)
     fw -= tmp
     print(f"N(w+dw)-N(w) from NL {fw}")
-    tl = tlm(nexp, ncyc, tl, param)
+    tl = tlm(nexp, ncyc, tl, param, modified_euler)
     print(f" L(dw) from TL {tl}")
     ltest = True
     print(f"LX_t LX = {tl @ tl}")
     ad = tl
-    ad = adm(nexp, ncyc, ad, param, ltest)
+    ad = adm(nexp, ncyc, ad, param, ltest, modified_euler)
     tmp = np.loadtxt(ifile)
     tl = tmp * 0.001
     pa = tl @ ad
@@ -197,11 +216,17 @@ if __name__ == "__main__":
 #    print(param)
 #    x = gen_true(1, param)
 #    x = gen_true(2, param)
+
+    modified_euler = False
 #    r = 28.0
 #    nstop = 2000
-#    x = gen_true(91, param)
-#    test_tlm(1, param) 
+#    param = p, r, b, dt, nstop
+#    x = gen_true(91, param, modified_euler)
+
+    test_tlm(1, param, modified_euler) 
+
 #    gen_obs(1, nstop, 60)
 #    test_grad(1, param)
+
 #    print(f"Jc={calc_cost(1, 0, nstop)}")
-    run_vda(1, 2)
+#    run_vda(1, 2)
