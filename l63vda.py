@@ -45,8 +45,8 @@ def fom(nexp, ncyc, w, param, modified_euler=False):
     fname = f"m{nexp:02}c{ncyc:03}.npy"
     for ntim in range(1, nstop+1):
         if modified_euler:
-            w1 = w + 0.5 * dt * florenz(w, p, r, b)
-            w += dt * florenz(w1, p, r, b)
+            wh = w + 0.5 * dt * florenz(w, p, r, b)
+            w += dt * florenz(wh, p, r, b)
         else:
             w += dt * florenz(w, p, r, b)
         x[ntim, :] = w
@@ -60,8 +60,8 @@ def tlm(nexp, ncyc, tl, param, modified_euler=False):
     wb = np.load(fname)
     for ntim in range(nstop):
         if modified_euler:
-            tl1 = tl + 0.5 * dt * tlorenz(tl, wb[ntim], p, r, b)
             wb1 = wb[ntim] + 0.5 * dt * florenz(wb[ntim], p, r, b)
+            tl1 = tl + 0.5 * dt * tlorenz(tl, wb[ntim], p, r, b)
             tl += dt * tlorenz(tl1, wb1, p, r, b)
         else:
             tl += dt * tlorenz(tl, wb[ntim], p, r, b)
@@ -81,16 +81,15 @@ def adm(nexp, ncyc, wa, param, ltest=False, modified_euler=False):
             d = calc_innovation(wb[ntim, :], wo[ntim, :])
             wa += d
         if modified_euler:
-            wb1 = wb[ntim-1, :] + 0.5 * dt * florenz(wb[ntim-1, :], p, r, b)
-#            dwa = 0.5 * dt * wa
-            dwa = dt * wa
-            wa1 = np.copy(wa)
+            wb1 = wb[ntim-1] + 0.5 * dt * florenz(wb[ntim-1], p, r, b)
+            dwa += dt * wa
+            wa1 = np.zeros(wa.size)
             wa1, dwa = alorenz(wa1, dwa, wb1, p, r, b)
-            dwa = 0.5 * dt * wa1
-#            dwa = dt * wa1
+            dwa += 0.5 * dt * wa1
+            wa += wa1
             wa, dwa = alorenz(wa, dwa, wb[ntim-1], p, r, b)
         else:
-            dwa = dt * wa
+            dwa += dt * wa
             wa, dwa = alorenz(wa, dwa, wb[ntim-1], p, r, b)
     return wa
 
@@ -141,7 +140,7 @@ def gen_true(nexp, param, modified_euler=False):
     return fom(nexp, 0, w0, param, modified_euler)
 
 
-def test_tlm(nexp, param, modified_euler=False):
+def test_tlm(nexp, param, modified_euler):
     ncyc = 1
     ifile = f"i{nexp:02}.txt"
     tmp = np.loadtxt(ifile)
@@ -163,17 +162,17 @@ def test_tlm(nexp, param, modified_euler=False):
     print(f"X_t (L_t (LX)) = {pa}")
 
 
-def test_grad(nexp, param):
+def test_grad(nexp, param, modified_euler):
     na1, na2 = -17, -2
     ltest = False
     ncyc = 1
     ifile = f"i{nexp:02}.txt"
     fw = np.loadtxt(ifile)
-    fw = fom(nexp, ncyc, fw, param)
+    fw = fom(nexp, ncyc, fw, param, modified_euler)
     cost0 = calc_cost(nexp, ncyc, nstop)
     ncyc = 2
     ad = np.zeros(fw.size)
-    ad = adm(nexp, ncyc, ad, param, ltest)
+    ad = adm(nexp, ncyc, ad, param, ltest, modified_euler)
     aa = ad @ ad
     chkgra = np.zeros([na2-na1+1])
     for nalpha in range(na1, na2+1):
@@ -181,14 +180,14 @@ def test_grad(nexp, param):
         ifile = f"i{nexp:02}.txt"
         fw = np.loadtxt(ifile)
         fw -= alpha * ad # gradient descent
-        fw = fom(nexp, ncyc, fw, param)
+        fw = fom(nexp, ncyc, fw, param, modified_euler)
         cost1 = calc_cost(nexp, ncyc, nstop)
         chkgra[nalpha-na1] = -(cost1 - cost0) / (alpha * aa)
         print(f"chkgra(10^{nalpha}) = {chkgra[nalpha-na1]}")
     np.savetxt(f"g{nexp:02}.txt", np.column_stack([np.arange(na1, na2+1), chkgra]))
 
 
-def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100):
+def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100, modified_euler=False):
     ltest = False
     if istart < 1:
         sys.exit()
@@ -198,12 +197,12 @@ def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100):
             ifile = f"i{nexpi:02}.txt"
             fw = np.loadtxt(ifile)
         else:
-            ad = 0.0
-            ad = adm(nexp, ncyc, ad, param, ltest)
+            ad = np.zeros(3)
+            ad = adm(nexp, ncyc, ad, param, ltest, modified_euler)
             mfile = f"m{nexp:02}c{ncyc-1:03}.npy"
             w = np.load(mfile)
             fw = w[0, :] - alpha * ad
-        fw = fom(nexp, ncyc, fw, param)
+        fw = fom(nexp, ncyc, fw, param, modified_euler)
         cost[ncyc-istart] = calc_cost(nexp, ncyc, nstop)
         print(f"{ncyc}: {cost[ncyc-istart]}")
     np.savetxt(f"j{nexp:02}i{nexpi:02}.txt", np.column_stack(
@@ -212,21 +211,17 @@ def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100):
 if __name__ == "__main__":
 #    nstop = 500
 #    r = 10
-    param = p, r, b, dt, nstop
-#    print(param)
-#    x = gen_true(1, param)
-#    x = gen_true(2, param)
-
-    modified_euler = False
 #    r = 28.0
-#    nstop = 2000
-#    param = p, r, b, dt, nstop
-#    x = gen_true(91, param, modified_euler)
+    modified_euler = True
+    param = p, r, b, dt, nstop
+    print(param)
+    x = gen_true(1, param, modified_euler)
+    x = gen_true(2, param, modified_euler)
 
     test_tlm(1, param, modified_euler) 
 
-#    gen_obs(1, nstop, 60)
-#    test_grad(1, param)
+    gen_obs(1, nstop, 60)
+    test_grad(1, param, modified_euler)
 
-#    print(f"Jc={calc_cost(1, 0, nstop)}")
-#    run_vda(1, 2)
+    print(f"Jc={calc_cost(1, 0, nstop)}")
+    run_vda(1, 2, alpha=1.0e-2, modified_euler=modified_euler)
