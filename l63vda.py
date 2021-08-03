@@ -133,7 +133,7 @@ def test_tlm(nexp, param):
     fw -= tmp
     print(f"N(w+dw)-N(w) from NL {fw}")
     tl = tlm(nexp, ncyc, tl, param)
-    print(f" L(dw) rom TL {tl}")
+    print(f" L(dw) from TL {tl}")
     ltest = True
     print(f"LX_t LX = {tl @ tl}")
     ad = tl
