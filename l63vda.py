@@ -209,19 +209,19 @@ def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100, modified_euler=False):
         [np.arange(istart, istop+1), cost]))
 
 if __name__ == "__main__":
-#    nstop = 500
+    nstop = 500
 #    r = 10
 #    r = 28.0
     modified_euler = True
     param = p, r, b, dt, nstop
     print(param)
     x = gen_true(1, param, modified_euler)
-    x = gen_true(2, param, modified_euler)
+#    x = gen_true(2, param, modified_euler)
 
-    test_tlm(1, param, modified_euler) 
+#    test_tlm(1, param, modified_euler) 
 
-    gen_obs(1, nstop, 60)
-    test_grad(1, param, modified_euler)
+#    gen_obs(1, nstop, 60)
+#    test_grad(1, param, modified_euler)
 
-    print(f"Jc={calc_cost(1, 0, nstop)}")
-    run_vda(1, 2, alpha=1.0e-2, modified_euler=modified_euler)
+#    print(f"Jc={calc_cost(1, 0, nstop)}")
+#    run_vda(1, 2, alpha=1.0e-2, modified_euler=modified_euler)
