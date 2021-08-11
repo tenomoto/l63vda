@@ -1,6 +1,6 @@
 # Jupyter notebooks
 
-* Variation data assimilation [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb)
+* Variational data assimilation [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb)
 * Neural network [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63nn.ipynb)
 
 # References
