@@ -1,7 +1,13 @@
+This repository contains the Python version of the Lorenz-63 model in Huang and Yang (1996).
+The code was used in [the 25-th data assimilation summer school in 2021](http://jmsfmml.or.jp/j/event/summerschool/25.html) held online in Japan.
+
 # Jupyter notebooks
 
-* Variational data assimilation [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb)
-* Neural network [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63nn.ipynb)
+Note that initial condition files need to be created manually in Binder.
+
+* Variational data assimilation [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63vda.ipynb)
+* Ensemble Kalman filter with perturbed observations [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63po.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63po.ipynb)
+* Neural network [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63nn.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63nn.ipynb)
 
 # References
 
