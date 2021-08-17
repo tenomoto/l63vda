@@ -187,7 +187,7 @@ def test_grad(nexp, param, modified_euler):
     np.savetxt(f"g{nexp:02}.txt", np.column_stack([np.arange(na1, na2+1), chkgra]))
 
 
-def run_vda(nexp, nexpi, alpha=5e-4, istart=1, istop=100, modified_euler=False):
+def run_vda(nexp, nexpi, param, alpha=5e-4, istart=1, istop=100, modified_euler=False):
     ltest = False
     if istart < 1:
         sys.exit()
@@ -224,4 +224,4 @@ if __name__ == "__main__":
 #    test_grad(1, param, modified_euler)
 
 #    print(f"Jc={calc_cost(1, 0, nstop)}")
-#    run_vda(1, 2, alpha=1.0e-2, modified_euler=modified_euler)
+#    run_vda(1, 2, param, alpha=1.0e-2, modified_euler=modified_euler)
