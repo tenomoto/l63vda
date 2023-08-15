@@ -5,9 +5,12 @@ The code was used in [the 25-th data assimilation summer school in 2021](http://
 
 Note that initial condition files need to be created manually in Binder.
 
-* Variational data assimilation [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63vda.ipynb)
+* Variational data assimilation
+ - original version generating files: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63vda.ipynb)
+ - modified version without files: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63vda_mem.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63vda_mem.ipynb)
 * Ensemble Kalman filter with perturbed observations [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63po.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63po.ipynb)
 * Neural network [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63nn.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63nn.ipynb)
+* Autmatic differentiation with [JAX](https://jax.readthedocs.io/en/latest/index.html) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/tenomoto/l63vda/HEAD?filepath=l63jax.ipynb) [nbviewer](https://nbviewer.jupyter.org/github/tenomoto/l63vda/blob/master/l63jax.ipynb)
 
 # References
 
